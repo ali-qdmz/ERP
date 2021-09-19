@@ -1,0 +1,391 @@
+{#{% extends 'base.html' %}#}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+    <link href='/static/css/normalize.css' rel='stylesheet'/>
+    <link href='/static/css/fontawesome/css/font-awesome.min.css' rel='stylesheet'/>
+    <link href="/static/css/vertical-responsive-menu.min.css" rel="stylesheet"/>
+    <link href="/static/css/style.css" rel="stylesheet"/>
+    <link href="/static/css/prism.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/static/css/persianDatepicker-default.css"/>
+    <link rel="stylesheet" href="/static/css/persianDatepicker-dark.css"/>
+    <link rel="stylesheet" href="/static/css/persianDatepicker-latoja.css"/>
+    <link rel="stylesheet" href="/static/css/persianDatepicker-melon.css"/>
+    <link rel="stylesheet" href="/static/css/persianDatepicker-lightorang.css"/>
+    <script src="/static/js/prism.js"></script>
+    <script src="/static/js/vertical-responsive-menu.min.js"></script>
+</head>
+<style>
+    .graph_container {
+        display: block;
+        width: 100%;
+        height: 100%;
+    }
+
+    input[type=text], select {
+        width: 50%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    input[type=submit] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #45a049;
+    }
+</style>
+<body>
+<p hidden id="machinename">{{ machine_name }}</p>
+<div class="graph_container">
+    <canvas id="myChart" data-url="{% url 'gantt-chart-data' %}"></canvas>
+</div>
+
+
+<label for="title2" style="font-family: Vazir; text-align: right; direction: rtl">انتخاب تاریخ: </label>
+<input type="text" placeholder="روز - ماه - سال" id="pdpF2"/><br/>
+<label for="title2" style="font-family: Vazir; text-align: right; direction: rtl">انتخاب دستگاه: </label>
+<select name="machines" id="machines-select">
+    <option value="cutting" style="font-family: Vazir">برش</option>
+    <option value="tn50" style="font-family: Vazir">TN50تراش</option>
+    <option value="tn71" style="font-family: Vazir">TN71تراش</option>
+    <option value="tpk90" style="font-family: Vazir">TPK90تراش</option>
+    <option value="s100_rosi" style="font-family: Vazir">s100فرز</option>
+    <option value="tp120" style="font-family: Vazir">TP120تراش</option>
+    <option value="universal_ferez" style="font-family: Vazir">فرز یونیورسال</option>
+    <option value="vertical_ferez" style="font-family: Vazir">فرز عمودی</option>
+    <option value="kharzani" style="font-family: Vazir">خارزنی</option>
+    <option value="drilling" style="font-family: Vazir">دریل کاری</option>
+    <option value="lath_cnc" style="font-family: Vazir">CNCتراش</option>
+    <option value="carousel" style="font-family: Vazir">کاروسل</option>
+    <option value="static_balancing" style="font-family: Vazir">بالانس استاتیکی</option>
+    <option value="pre_assembling" style="font-family: Vazir">پیش مونتاژ</option>
+    <option value="welding" style="font-family: Vazir">جوشکاری</option>
+    <option value="assembly" style="font-family: Vazir">مونتاژ</option>
+    <option value="packing_delivery" style="font-family: Vazir">بسته بندی و تحویل</option>
+    <option value="outsourcing" style="font-family: Vazir">برونسپاری</option>
+    <option value="casting_model" style="font-family: Vazir">نیاز به مدل ریخته</option>
+    <option value="casting" style="font-family: Vazir">ریخته گری</option>
+    <option value="painting" style="font-family: Vazir">رنگرزی</option>
+</select>
+<input type="submit" value="جست و جو" onclick="submit()">
+
+</body>
+</html>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script>
+    var ctx = document.getElementById("myChart");
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [
+                {
+
+                    label: 'Scatter Dataset',
+                    backgroundColor: "rgba(246,156,85,1)",
+                    borderColor: "rgba(246,156,85,1)",
+                    fill: false,
+                    borderWidth: 20,
+                    pointRadius: 0,
+                    data: [
+
+                    ]
+                },
+
+            ]
+        },
+        options: {
+            legend: {
+                display: false
+            },
+            scales: {
+                xAxes: [{
+                    type: 'linear',
+                    position: 'bottom',
+                }],
+                yAxes: [{
+                    id: 'y-axis-1',
+                    display: true,
+                    position: 'left',
+                    ticks: {
+                        callback: function (value, index, values) {
+                            return value + "%";
+                        }
+                    },
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Average Personal Income',
+                        fontColor: "#546372"
+                    }
+                }]
+            }
+        }
+    });
+
+    function submit() {
+
+        var macihne_name = document.getElementById("machines-select").value;
+        var date = document.getElementById("pdpF2").value;
+        {#alert(date);#}
+        {#alert(macihne_name);#}
+        data = {
+            machinename: macihne_name,
+            date: date
+        }
+                axios.post("http://127.0.0.1:8000/project_management/gantt-chart-data/", data).then(function (response) {
+            chart_data = [];
+            for (let i = 0; i < response.data.labels.length; i++) {
+                response.data.data[i][1] = parseFloat(response.data.data[i][1]) / 60;
+                response.data.data[i][3] = parseFloat(response.data.data[i][3]) / 60;
+                response.data.data[i][1] = response.data.data[i][1].toString().replace('0.', '');
+                response.data.data[i][3] = response.data.data[i][3].toString().replace('0.', '');
+
+                chart_data.push({
+
+                    label: response.data.labels,
+                    backgroundColor: "rgba(246,156,85,1)",
+                    borderColor: "rgba(246,156,85,1)",
+                    fill: false,
+                    borderWidth: 20,
+                    pointRadius: 0,
+                    data: [
+                        {
+                            x: response.data.data[i][0] + '.' + response.data.data[i][1],
+                            y: i
+                        }, {
+                            x: response.data.data[i][2] + '.' + response.data.data[i][3],
+                            y: i
+                        }
+
+                    ]
+
+                })
+            }
+
+            chart.data = {
+                datasets: chart_data
+            };
+            chart.options = {
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom',
+                    }],
+                    yAxes: [{
+                        id: 'y-axis-1',
+                        display: true,
+                        position: 'left',
+                        ticks: {
+                            callback: function (value, index, values) {
+
+                                return response.data.labels[value];
+
+
+                            }
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: "mto code/ workpiece code",
+                            fontColor: "#546372"
+                        }
+                    }]
+                }
+            }
+            chart.update();
+            // do whatever you want if console is [object object] then stringify the response
+
+        })
+    }
+
+    $(function () {
+        var $populationChart = $("#myChart");
+        var macihne_name = document.getElementById("machinename").innerText;
+        data = {
+            machinename: macihne_name
+        }
+        axios.post("http://127.0.0.1:8000/project_management/gantt-chart-data/", data).then(function (response) {
+            chart_data = [];
+            for (let i = 0; i < response.data.labels.length; i++) {
+                response.data.data[i][1] = parseFloat(response.data.data[i][1]) / 60;
+                response.data.data[i][3] = parseFloat(response.data.data[i][3]) / 60;
+                response.data.data[i][1] = response.data.data[i][1].toString().replace('0.', '');
+                response.data.data[i][3] = response.data.data[i][3].toString().replace('0.', '');
+
+
+                chart_data.push({
+
+                    label: response.data.labels,
+                    backgroundColor: "rgba(246,156,85,1)",
+                    borderColor: "rgba(246,156,85,1)",
+                    fill: false,
+                    borderWidth: 20,
+                    pointRadius: 0,
+                    data: [
+                        {
+                            x: response.data.data[i][0] + '.' + response.data.data[i][1],
+                            y: i
+                        }, {
+                            x: response.data.data[i][2] + '.' + response.data.data[i][3],
+                            y: i
+                        }
+
+                    ]
+
+                })
+            }
+
+            chart.data = {
+                datasets: chart_data
+            };
+            chart.options = {
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        type: 'linear',
+                        position: 'bottom',
+                    }],
+                    yAxes: [{
+                        id: 'y-axis-1',
+                        display: true,
+                        position: 'left',
+                        ticks: {
+                            callback: function (value, index, values) {
+
+                                return response.data.labels[value];
+
+
+                            }
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: "mto code/ workpiece code",
+                            fontColor: "#546372"
+                        }
+                    }]
+                }
+            }
+            chart.update();
+            // do whatever you want if console is [object object] then stringify the response
+
+        })
+    });
+
+</script>
+<script src="/static/js/jquery-1.10.1.min.js"></script>
+<script src="/static/js/persianDatepicker.js"></script>
+<script>
+    $(function () {
+        //usage
+        $(".usage").persianDatepicker();
+
+        //themes
+        $("#pdpDefault").persianDatepicker({alwaysShow: true,});
+        $("#pdpLatoja").persianDatepicker({theme: "latoja", alwaysShow: true,});
+        $("#pdpLightorang").persianDatepicker({theme: "lightorang", alwaysShow: true,});
+        $("#pdpMelon").persianDatepicker({theme: "melon", alwaysShow: true,});
+        $("#pdpDark").persianDatepicker({theme: "dark", alwaysShow: true,});
+
+        //size
+        $("#pdpSmall").persianDatepicker({cellWidth: 14, cellHeight: 12, fontSize: 8});
+        $("#pdpBig").persianDatepicker({cellWidth: 78, cellHeight: 60, fontSize: 18});
+
+        //formatting
+        $("#pdpF1").persianDatepicker({formatDate: "YYYY/MM/DD 0h:0m:0s:ms"});
+        $("#pdpF2").persianDatepicker({formatDate: "YYYY-0M-0D"});
+        $("#pdpF3").persianDatepicker({formatDate: "YYYY-NM-DW|ND", isRTL: !0});
+
+        //startDate & endDate
+        $("#pdpStartEnd").persianDatepicker({startDate: "1394/11/12", endDate: "1395/5/5"});
+        $("#pdpStartToday").persianDatepicker({startDate: "today", endDate: "1410/11/5"});
+        $("#pdpEndToday").persianDatepicker({startDate: "1397/11/12", endDate: "today"});
+
+        //selectedBefor & selectedDate
+        $("#pdpSelectedDate").persianDatepicker({selectedDate: "1404/1/1", alwaysShow: !0});
+        $("#pdpSelectedBefore").persianDatepicker({selectedBefore: !0});
+        $("#pdpSelectedBoth").persianDatepicker({selectedBefore: !0, selectedDate: "1395/5/5"});
+
+        //jdate & gdate attributes
+        $("#pdp-data-jdate").persianDatepicker({
+            onSelect: function () {
+                alert($("#pdp-data-jdate").attr("data-gdate"));
+            }
+        });
+        $("#pdp-data-gdate").persianDatepicker({
+            showGregorianDate: true,
+            onSelect: function () {
+                alert($("#pdp-data-gdate").attr("data-jdate"));
+            }
+        });
+
+
+        //Gregorian date
+        $("#pdpGregorian").persianDatepicker({showGregorianDate: true});
+
+        // jDateFuctions
+        // var jdf = new jDateFunctions();
+        // var pd = new persianDate();
+        // $("#pdpjdf-1").persianDatepicker({
+        //     onSelect: function () {
+        //         $("#pdpjdf-1").val(jdf.getJulianDayFromPersian(pd.parse($("#pdpjdf-1").val())));
+        //         $("#pdpjdf-2").val(jdf.getLastDayOfPersianMonth(pd.parse($("#pdpjdf-1").val())));
+        //         $("#pdpjdf-3").val(jdf.getPCalendarDate($("#pdpjdf-1").val()));
+        //     }
+        // });
+
+
+        // //convert jalali date to miladi
+        // $("#year, #month, #day").on("change", function () {
+        //     $("#month").val() > 6 ? $("#day-31").hide() : $("#day-31").show();;
+        //     showConverted();
+        // });
+
+        // $("#year").keyup(showConverted);
+        //
+        // function showConverted() {
+        //     try{
+        //         var pd = new persianDate();
+        //         pd.year = parseInt($("#year").val());
+        //         pd.month = parseInt($("#month").val());
+        //         pd.date = parseInt($("#day").val());
+        //
+        //         var jdf = new jDateFunctions();
+        //         $("#converted").html("Gregorian :  " + jdf.getGDate(pd)._toString("YYYY/MM/DD") + "     [" + jdf.getGDate(pd) + "]<br />Julian:  " + jdf.getJulianDayFromPersian(pd));
+        //
+        //     } catch (e) {
+        //         $("#converted").html("Enter the year correctly!");
+        //     }
+        // }
+
+
+        //startDate is tomarrow
+        var p = new persianDate();
+        $("#pdpStartDateTomarrow").persianDatepicker({
+            startDate: p.now().addDay(1).toString("YYYY/MM/DD"),
+            endDate: p.now().addDay(4).toString("YYYY/MM/DD")
+        });
+
+
+    });
+</script>

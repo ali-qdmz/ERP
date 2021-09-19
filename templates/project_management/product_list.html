@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+<center>
+    <form action="http://127.0.0.1:8000/project_management/inventory/" method="post">
+        <label for="title2">نام کالا</label>
+        <input type="text" style="direction:RTL" id="title2" name="title" placeholder="نام کالا..">
+        <input type="submit" value="جست و جو">
+    </form>
+    <table class="styled-table">
+        <thead>
+        <tr>
+            <th style="text-align: center">نام</th>
+            <th style="text-align: center">تعداد باقی مانده</th>
+            <th style="text-align: center">قیمت خرید</th>
+            <th style="text-align: center">سال</th>
+            <th style="text-align: center">کد</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr class="active-row" id="row-{{ forloop.counter0 }}">
+                <td style="text-align: center" id="name-row-{{ forloop.counter0 }}"
+                    onclick="cpy_clipboard(id)">{{ product.Name }}</td>
+                <td style="text-align: center" id="qty-row-{{ forloop.counter0 }}"
+                    onclick="cpy_clipboard(id)">{{ product.InQty }}</td>
+                <td style="text-align: center" id="price-row-{{ forloop.counter0 }}"
+                    onclick="cpy_clipboard(id)">{{ product.InPrice }}</td>
+                <td style="text-align: center" id="year-row-{{ forloop.counter0 }}"
+                    onclick="cpy_clipboard(id)">{{ product.Vch_Year }}</td>
+                <td style="text-align: center" id="code-row-{{ forloop.counter0 }}"
+                    onclick="cpy_clipboard(id)">{{ product.Code }}</td>
+            </tr>
+            <!-- and so on... -->
+        {% endfor %}
+        </tbody>
+    </table>
+</center>
+</body>
+<script>
+    function cpy_clipboard(x) {
+        {#alert(document.getElementById("name-row-" + x[x.length - 1]).innerText);#}
+        {#copy(document.getElementById("name-row-" + x[x.length - 1]).innerText);#}
+        window.opener.postMessage(document.getElementById("name-row-" + x.split("-")[2]).innerText, '*');
+    }
+
+    function copy(text) {
+        var input = document.createElement('input');
+        input.setAttribute('value', text);
+        document.body.appendChild(input);
+        input.select();
+        var result = document.execCommand('copy');
+        document.body.removeChild(input);
+        return result;
+    }
+</script>
+
+
+<style>
+    .styled-table {
+        border-collapse: collapse;
+        margin: 25px 0;
+        font-size: 0.9em;
+        font-family: sans-serif;
+        min-width: 400px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .styled-table thead tr {
+        background-color: #009879;
+        color: #ffffff;
+        text-align: left;
+    }
+
+    .styled-table th,
+    .styled-table td {
+        padding: 12px 15px;
+    }
+
+    .styled-table tbody tr {
+        border-bottom: 1px solid #dddddd;
+    }
+
+    .styled-table tbody tr:nth-of-type(even) {
+        background-color: #f3f3f3;
+    }
+
+    .styled-table tbody tr:last-of-type {
+        border-bottom: 2px solid #009879;
+    }
+
+    .styled-table tbody tr.active-row {
+        font-weight: bold;
+        color: #009879;
+    }
+
+    input[type=text], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    input[type=submit] {
+        width: 100%;
+        background-color: #4CAF50;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+        background-color: #45a049;
+    }
+
+    div {
+        border-radius: 5px;
+        background-color: #f2f2f2;
+        padding: 20px;
+    }
+</style>
+</html>

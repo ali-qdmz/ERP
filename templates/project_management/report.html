@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Report</title>
+</head>
+<body>
+
+</body>
+</html>
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+    <form action="/project_management/report/" method="get">
+        <div id="container" style="width: 75%;">
+                <div class="row">
+                    <div class="col-25">
+                        <label for="lname" style="font-family: Traffic"> شماره دستور کار </label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="fname" name="fname" placeholder="شماره دستور کار ..">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-25">
+                        <label for="lname" style="font-family: Traffic"> ردیف دستور کار </label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="lname" name="lname" placeholder="ردیف دستور کار ..">
+                    </div>
+                </div>
+
+                <div class="row">
+                        <button type="submit" formmethod="post" class="button" style="font-family: Traffic"> جستجو</button>
+                </div>
+        </div>
+</form>
+
+{#<form action="/project_management/report/" method="get">#}
+{#  <label for="fname">First name:</label>#}
+{#  <input type="text" id="fname" name="fname"><br><br>#}
+{#  <label for="lname">Last name:</label>#}
+{#  <input type="text" id="lname" name="lname"><br><br>#}
+{#  <button type="submit">Submit</button>#}
+{#  <button type="submit" formmethod="post">Submit using POST</button>#}
+{#</form>#}
+
+{% for mto_content_rows in mto_header %}
+    <p>{{ mto_content_rows }} دستور کار شماره </p>
+        <div style="margin-left: 60px">
+        <table id="customers">
+            <tr>
+                <th class="text">ردیف دستور کار</th>
+                <th class="text">نام قطعه</th>
+                <th class="text">نوع مواد</th>
+                <th class="text">جنس</th>
+                <th class="text">تعداد</th>
+                <th class="text">ابعاد مواد خام</th>
+                <th class="text">ملاحظات</th>
+                <th class="text">بهای تمام شده مواد خام</th>
+                <th class="text">برش</th>
+                <th class="text">تراش TN50</th>
+                <th class="text">تراش Tn71</th>
+                <th class="text">تراش TPK90</th>
+                <th class="text">فرز روسی</th>
+                <th class="text">تراش TP120</th>
+                <th class="text">فرز یونیورسال</th>
+                <th class="text">فرز عمودی</th>
+                <th class="text">خارزنی</th>
+                <th class="text">دریل کاری</th>
+                <th class="text">تراش CNC</th>
+                <th class="text">کاروسل</th>
+                <th class="text">بالانس استاتیکی</th>
+                <th class="text">پیش مونتاژ</th>
+                <th class="text">جوشکاری</th>
+                <th class="text">مونتاژ</th>
+                <th class="text">رنگرزی</th>
+                <th class="text">بسته بندی و تحویل</th>
+                <th class="text">درخواست خرید</th>
+                <th class="text">خرید انجام شده</th>
+                <th class="text">ریخته گری</th>
+                <th class="text">نیاز به مدل ریخته</th>
+                <th class="text">موجود در انبار 1</th>
+                <th class="text">موجود در انبار 2</th>
+                <th class="text">برونسپاری</th>
+                <th class="text">خرید اقلام ساختنی</th>
+                <th class="text">خرید استاندارد</th>
+                <th class="text">زمان تحویل به تولید</th>
+                <th class="text">اتمام ساخت</th>
+                <th class="text">توضیحات</th>
+                <th class="text">بهای کل برنامه ریزی شده</th>
+                <th class="text">بهای کل واقعی</th>
+
+                {% for rows in mto_content %}
+                    {% if rows.mto_headers.agenda_number.agenda_number == mto_content_rows %}
+                    <tr>
+                    <td class="text">{{ rows.mto_headers.queue }}</td>
+
+                        {% if rows.part_name == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.part_name }}</td>
+                        {% endif %}
+
+                        {% if rows.material_type == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.material_type }}</td>
+                        {% endif %}
+
+                        {% if rows.material == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.material }}</td>
+                        {% endif %}
+
+                        {% if rows.quantity == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.quantity }}</td>
+                        {% endif %}
+
+                        {% if rows.raw_material_dimension == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.raw_material_dimension }}</td>
+                        {% endif %}
+
+                        {% if rows.remark == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.remark }}</td>
+                        {% endif %}
+
+                        {% if rows.material_cost == None %}
+                            <td class="text">ندارد</td>
+                        {% else %}
+                            <td class="text">{{ rows.material_cost }}</td>
+                        {% endif %}
+
+                        {% if rows.cutting == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.cutting.start_planning != None and  rows.cutting.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.cutting.start_planning != None and  rows.cutting.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+
+                        {% if rows.tn50 == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.tn50.start_planning != None and  rows.tn50.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.tn50.start_planning != None and  rows.tn50.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.tn71 == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.tn71.start_planning != None and  rows.tn71.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.tn71.start_planning != None and  rows.tn71.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.tpk90 == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.tpk90.start_planning != None and  rows.tpk90.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.tpk90.start_planning != None and  rows.tpk90.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.s100_rosi == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.s100_rosi.start_planning != None and  rows.s100_rosi.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.s100_rosi.start_planning != None and  rows.s100_rosi.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.tp120 == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.tp120.start_planning != None and  rows.tp120.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.tp120.start_planning != None and  rows.tp120.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.universal_ferez == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.universal_ferez.start_planning != None and  rows.universal_ferez.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.universal_ferez.start_planning != None and  rows.universal_ferez.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.vertical_ferez == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.vertical_ferez.start_planning != None and  rows.vertical_ferez.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.vertical_ferez.start_planning != None and  rows.vertical_ferez.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.kharzani == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.kharzani.start_planning != None and  rows.kharzani.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.kharzani.start_planning != None and  rows.kharzani.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.drilling == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.drilling.start_planning != None and  rows.drilling.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.drilling.start_planning != None and  rows.drilling.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.lath_cnc == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.lath_cnc.start_planning != None and  rows.lath_cnc.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.lath_cnc.start_planning != None and  rows.lath_cnc.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.carousel == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.carousel.start_planning != None and  rows.carousel.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.carousel.start_planning != None and  rows.carousel.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.static_balancing == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.static_balancing.start_planning != None and  rows.static_balancing.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.static_balancing.start_planning != None and  rows.static_balancing.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.pre_assembling == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.pre_assembling.start_planning != None and  rows.pre_assembling.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.pre_assembling.start_planning != None and  rows.pre_assembling.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.welding == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.welding.start_planning != None and  rows.welding.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.welding.start_planning != None and  rows.welding.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.assembly == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.assembly.start_planning != None and  rows.assembly.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.assembly.start_planning != None and  rows.assembly.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.painting == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.painting.start_planning != None and  rows.painting.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.painting.start_planning != None and  rows.painting.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.packing_delivery == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.packing_delivery.start_planning != None and  rows.packing_delivery.finish_actual == None %}
+                            <td class="text">به اتمام نرسیده</td>
+                        {% endif %}
+                        {% if rows.packing_delivery.start_planning != None and  rows.packing_delivery.finish_actual != None %}
+                            <td class="text">به اتمام رسیده</td>
+                        {% endif %}
+
+                        {% if rows.buy_request == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.buy_request == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.is_bought == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.is_bought == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.casting == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.casting == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.casting_model == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.casting_model == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.available_sps_1 == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.available_sps_1 == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.available_sps_2 == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.available_sps_2 == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.outsourcing == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.outsourcing == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.buy_material == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.buy_material == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.buy_material_iso == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.buy_material_iso == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.delivery_date == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.delivery_date != None %}
+                            <td class="text">{{ rows.delivery_date }}</td>
+                        {% endif %}
+
+                        {% if rows.finished_manufacturing == False %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.finished_manufacturing == True %}
+                            <td class="text">دارد</td>
+                        {% endif %}
+
+                        {% if rows.comments == None %}
+                            <td class="text">ندارد</td>
+                        {% endif %}
+                        {% if rows.comments != None %}
+                            <td class="text">{{ rows.comments }}</td>
+                        {% endif %}
+
+                        <td class="text"> {{ rows.total_cost_planning }}</td>
+                        <td class="text"> {{ rows.total_cost_actual }}</td>
+
+
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+        </table>
+    <div>
+    <br>
+    <br>
+    <br>
+    </div>
+
+    </div>
+    {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+</div>
+
+    </div>
+    <style>
+        #customers {
+            font-family: Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #customers td, #customers th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #customers tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        #customers tr:hover {
+            background-color: #ddd;
+        }
+
+        #customers th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #04AA6D;
+            color: white;
+        }
+
+        input[type=text], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+
+        label {
+            padding: 12px 12px 12px 0;
+            display: inline-block;
+        }
+
+        .col-25 {
+            float: left;
+            width: 25%;
+            margin-top: 6px;
+        }
+
+        /* Floating column for inputs: 75% width */
+        .col-75 {
+            float: left;
+            width: 75%;
+            margin-top: 6px;
+        }
+
+        /* Clear floats after the columns */
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+
+        .button {
+            display: inline-block;
+            padding: 3px 3px;
+            font-size: 24px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            outline: none;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 9px #999;
+        }
+
+        .button:hover {
+            background-color: #3e8e41
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+            box-shadow: 0 5px #666;
+            transform: translateY(4px);
+        }
+
+        .text {
+            font-family: Traffic;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <script>
+        function search() {
+            var agenda_number = document.getElementById('agenda_number').value;
+            var queue = document.getElementById('queue').value;
+            data = {
+                agenda_number: agenda_number,
+                queue: queue
+            }
+
+            axios.post("http://127.0.0.1:8000/project_management/report/", data).then(function (response) {
+                console.log(response.data)
+                // do whatever you want if console is [object object] then stringify the response
+            })
+        }
+    </script>
+
+
+{% endblock %}
+

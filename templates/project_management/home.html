@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chart</title>
+
+</head>
+<body>
+
+</body>
+</html>
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <div class="tab">
+            <div style="margin-top: 35px;margin-left: -40px">
+                <p style="
+                margin-left: 55px;margin-top: 20px"> مواد :
+                    <input id="material" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+                {#                <p style="margin-left: 40px;margin-top: -10px"> دستگاه :#}
+                {#                    <input id="material" style="width: 60px;height: 20px;background-color: white;alignment: right">#}
+                {#                </p>#}
+                <label style="margin-left: 60px;margin-top: -10px">دستگاه:</label>
+
+                <select name="cars" id="cars" style="width: 100px;height: 30px;background-color: white;margin-left: 45px">
+                    <option value="volvo">تراش</option>
+                    <option value="saab">برش</option>
+                    <option value="mercedes">فرز</option>
+                    <option value="audi">جوش</option>
+                </select>
+            </div>
+            <div style="margin-left: 80px;margin-top: -145px">
+                <p style="text-align: center;margin-left: 80px">از تاریخ
+                </p>
+                <p style="margin-left: 40px;margin-top: -10px"> سال :
+                    <input id="from_year" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+                <p style="margin-left: 46px;margin-top: -35px"> ماه :
+                    <input id="from_month" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+                <p style="margin-left: 47px;margin-top: -35px"> روز :
+                    <input id="from_day" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+                <p style="text-align: center;margin-top: -25px;margin-left: 80px">تا تاریخ
+                <p>
+                <p style="margin-left: 40px;margin-top: -10px"> سال :
+                    <input id="to_year" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+                <p style="margin-left: 46px;margin-top: -35px"> ماه :
+                    <input id="to_month" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+                <p style="margin-left: 47px;margin-top: -35px"> روز :
+                    <input id="to_day" style="width: 60px;height: 20px;background-color: white;alignment: right">
+                </p>
+
+                <div style="margin-top: -65px">
+                    <button style="margin-left: -70px;width: 70px" onclick="submit()">ثبت</button>
+                </div>
+            </div>
+
+        </div>
+        <div id="container" style="width: 75%;">
+
+            <canvas id="population-chart" data-url="{% url 'population-chart' %}"></canvas>
+        </div>
+    </div>
+    <style>
+        .tab {
+            float: right;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            width: 20%;
+            height: 415px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    <script>
+        var edited = false;
+        var $populationChart = $("#population-chart");
+        var ctx = $populationChart[0].getContext("2d");
+        var chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Actual time',
+                    backgroundColor: 'orange',
+                    data: []
+                },
+                    {
+                        label: 'planning time',
+                        backgroundColor: 'blue',
+                        data: []
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Operation Bar Chart'
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                        }
+                    }]
+                },
+
+            }
+        });
+
+        function submit() {
+            var from_year = document.getElementById('from_year').value;
+            var from_month = document.getElementById('from_month').value;
+            var from_day = document.getElementById('from_day').value;
+            var to_year = document.getElementById('to_year').value;
+            var to_month = document.getElementById('to_month').value;
+            var to_day = document.getElementById('to_day').value;
+            var material = document.getElementById('material').value;
+            edited = true;
+            data = {
+                from_year: from_year, from_month: from_month, from_day: from_day,
+                to_year: to_year, to_month: to_month, to_day: to_day,
+                material: material
+            }
+            axios.post("http://127.0.0.1:8000/project_management/population-chart/", data).then(function (response) {
+                console.log(response.data)
+                chart.data = {
+                    labels: response.data.labels,
+                    datasets:
+                        [{
+                            label: 'Actual time',
+                            backgroundColor: 'orange',
+                            data: response.data.data[0]
+                        },
+                            {
+                                label: 'planning time',
+                                backgroundColor: 'blue',
+                                data: response.data.data[1]
+                            }
+                        ]
+                };
+                chart.update();
+                // do whatever you want if console is [object object] then stringify the response
+
+            })
+        }
+
+        $(function () {
+            var $populationChart = $("#population-chart");
+            alert($populationChart.data("url"));
+            $.ajax({
+                url: $populationChart.data("url"),
+                success: function (data) {
+
+                    chart.data = {
+                        labels: data.labels,
+                        datasets: [{
+                            label: 'Actual time',
+                            backgroundColor: 'orange',
+                            data: data.data[0]
+                        },
+                            {
+                                label: 'planning time',
+                                backgroundColor: 'blue',
+                                data: data.data[1]
+                            }
+                        ]
+                    };
+                    chart.update();
+
+                }
+            });
+        });
+
+
+
+
+    </script>
+{% endblock %}
+
